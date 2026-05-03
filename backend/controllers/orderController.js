@@ -1,14 +1,28 @@
 const Order = require("../models/Order");
+const Restaurant = require("../models/Restaurant");
 
 // Create Order
 exports.createOrder = async (req, res) => {
   try {
+    const { restaurantId, items, totalPrice } = req.body;
+
+    // 1. Check restaurant exists
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    // 2. Create order
     const order = await Order.create({
-      ...req.body,
-      user: req.user._id // from token
+      user: req.user._id,
+      restaurant: restaurantId,
+      items,
+      totalPrice
     });
 
     res.status(201).json(order);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
