@@ -1,5 +1,8 @@
 const Restaurant = require("../models/Restaurant");
 
+console.log(Restaurant);
+
+
 // Create restaurant
 exports.createRestaurant = async (req, res) => {
   try {
