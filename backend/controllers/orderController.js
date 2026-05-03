@@ -5,7 +5,7 @@ exports.createOrder = async (req, res) => {
   try {
     const order = await Order.create({
       ...req.body,
-      user: req.user.id // from token
+      user: req.user._id // from token
     });
 
     res.status(201).json(order);

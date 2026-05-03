@@ -18,7 +18,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
-app.use("/api/restaurants", (req, res) => res.send("Restaurants route"));
+app.use("/api/restaurants", require("./routes/restaurantRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 // Connect MongoDB
 mongoose.connect(process.env.MONGO_URI)

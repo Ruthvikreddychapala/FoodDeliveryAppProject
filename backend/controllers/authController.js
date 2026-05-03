@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
     // 3. Approval logic
     let isApproved = false;
 
-    if (role === "customer") {
+    if (role === "customer" || role === "admin") {
       isApproved = true; // customers can use immediately
     }
 
