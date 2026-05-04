@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Restaurant = require("../models/Restaurant");
+const User = require("../models/User");
 
 // Create Order
 exports.createOrder = async (req, res) => {
@@ -47,11 +48,51 @@ exports.updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Restaurant controls early stages
+    if (req.user.role === "restaurant") {
+      if (!["accepted", "preparing"].includes(status)) {
+        return res.status(403).json({ message: "Invalid status for restaurant" });
+      }
+    }
+
+    // Driver controls delivery stages
+    if (req.user.role === "driver") {
+      if (!["out_for_delivery", "delivered"].includes(status)) {
+        return res.status(403).json({ message: "Invalid status for driver" });
+      }
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.assignDriver = async (req, res) => {
+  try {
+    const { driverId } = req.body;
+
+    // Check driver exists
+    const driver = await User.findById(driverId);
+
+    if (!driver || driver.role !== "driver") {
+      return res.status(400).json({ message: "Invalid driver" });
+    }
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { status },
+      { driver: driverId, status: "out_for_delivery" },
       { new: true }
-    );
+    ).populate("driver", "name email");
 
     res.json(order);
   } catch (error) {
