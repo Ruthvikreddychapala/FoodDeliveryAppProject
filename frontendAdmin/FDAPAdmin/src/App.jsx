@@ -1,10 +1,7 @@
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import SocketTest from "./components/SocketTest";
 
 function App() {
-  const token = localStorage.getItem("token");
-
-  return token ? <Dashboard /> : <Login />;
+  return <SocketTest />;
 }
 
 export default App;
