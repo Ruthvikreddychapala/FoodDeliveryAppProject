@@ -20,6 +20,9 @@ export default function Navbar() {
     localStorage.getItem("user")
   );
 
+  const loyaltyPoints =
+    user?.loyaltyPoints || 0;
+
   // TOTAL CART ITEMS
   const totalItems = cart.reduce(
     (acc, item) =>
@@ -50,7 +53,7 @@ export default function Navbar() {
 
       </Link>
 
-      {/* NAVIGATION */}
+      {/* LINKS */}
       <div className="flex items-center gap-6 text-lg">
 
         {/* CUSTOMER */}
@@ -60,42 +63,40 @@ export default function Navbar() {
 
             <Link
               to="/home"
-              className={`hover:text-orange-400 transition ${
+              className={`hover:text-orange-400 ${
                 location.pathname === "/home"
                   ? "text-orange-500 font-bold"
                   : ""
               }`}
             >
-
               Home
-
             </Link>
 
             <Link
               to="/cart"
-              className={`hover:text-orange-400 transition ${
+              className={`hover:text-orange-400 ${
                 location.pathname === "/cart"
                   ? "text-orange-500 font-bold"
                   : ""
               }`}
             >
-
               Cart ({totalItems})
-
             </Link>
 
             <Link
               to="/my-orders"
-              className={`hover:text-orange-400 transition ${
+              className={`hover:text-orange-400 ${
                 location.pathname === "/my-orders"
                   ? "text-orange-500 font-bold"
                   : ""
               }`}
             >
-
               My Orders
-
             </Link>
+
+            <div className="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold">
+              ⭐ {loyaltyPoints} Points
+            </div>
 
           </>
 
@@ -108,30 +109,14 @@ export default function Navbar() {
 
             <Link
               to="/restaurant/dashboard"
-              className={`hover:text-orange-400 transition ${
+              className={`hover:text-orange-400 ${
                 location.pathname ===
                 "/restaurant/dashboard"
                   ? "text-orange-500 font-bold"
                   : ""
               }`}
             >
-
               Dashboard
-
-            </Link>
-
-            <Link
-              to="/restaurant/orders"
-              className={`hover:text-orange-400 transition ${
-                location.pathname ===
-                "/restaurant/orders"
-                  ? "text-orange-500 font-bold"
-                  : ""
-              }`}
-            >
-
-              Orders
-
             </Link>
 
           </>
@@ -143,16 +128,14 @@ export default function Navbar() {
 
           <Link
             to="/driver/dashboard"
-            className={`hover:text-orange-400 transition ${
+            className={`hover:text-orange-400 ${
               location.pathname ===
               "/driver/dashboard"
                 ? "text-orange-500 font-bold"
                 : ""
             }`}
           >
-
             Driver Dashboard
-
           </Link>
 
         )}
@@ -160,11 +143,9 @@ export default function Navbar() {
         {/* LOGOUT */}
         <button
           onClick={logout}
-          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-bold transition"
+          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-bold"
         >
-
           Logout
-
         </button>
 
       </div>

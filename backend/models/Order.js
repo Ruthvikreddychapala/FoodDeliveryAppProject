@@ -45,7 +45,9 @@ const orderSchema =
 
         "out_for_delivery",
 
-        "delivered"
+        "delivered",
+
+        "rejected"
       ],
 
       default: "pending"
@@ -58,6 +60,16 @@ const orderSchema =
       ref: "User",
 
       default: null
+    },
+
+    foodRating: {
+      type: Number,
+      default: 0
+    },
+
+    driverRating: {
+      type: Number,
+      default: 0
     }
 
   },
