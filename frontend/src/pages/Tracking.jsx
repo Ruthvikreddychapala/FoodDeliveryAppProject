@@ -20,6 +20,12 @@ export default function Tracking() {
   const [loading, setLoading] =
     useState(true);
 
+  const [foodRating, setFoodRating] =
+    useState(5);
+
+  const [driverRating, setDriverRating] =
+    useState(5);
+
   // FETCH ORDER
   const fetchOrder =
     async () => {
@@ -45,20 +51,10 @@ export default function Tracking() {
         const data =
           await response.json();
 
-        console.log(
-          "ALL ORDERS:",
-          data
-        );
-
         const foundOrder =
           data.find(
             (o) => o._id === id
           );
-
-        console.log(
-          "FOUND ORDER:",
-          foundOrder
-        );
 
         setOrder(
           foundOrder
@@ -66,14 +62,50 @@ export default function Tracking() {
 
       } catch (error) {
 
-        console.log(
-          "TRACK ERROR:",
-          error
-        );
+        console.log(error);
 
       } finally {
 
         setLoading(false);
+      }
+    };
+
+  // SUBMIT RATING
+  const submitRating =
+    async () => {
+
+      try {
+
+        const token =
+          localStorage.getItem(
+            "token"
+          );
+
+        await fetch(
+          `http://localhost:5000/api/orders/${order._id}/rate`,
+          {
+            method: "PUT",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                `Bearer ${token}`
+            },
+
+            body: JSON.stringify({
+              foodRating,
+              driverRating
+            })
+          }
+        );
+
+        alert("Rating Submitted");
+
+      } catch (error) {
+
+        console.log(error);
       }
     };
 
@@ -241,7 +273,7 @@ export default function Tracking() {
         {/* MAP */}
         {order.driver?.location && (
 
-          <div className="bg-slate-900 p-6 rounded-2xl">
+          <div className="bg-slate-900 p-6 rounded-2xl mb-6">
 
             <h2 className="text-2xl font-bold mb-5">
 
@@ -256,6 +288,61 @@ export default function Tracking() {
               className="rounded-2xl"
               src={`https://maps.google.com/maps?q=${order.driver.location.latitude},${order.driver.location.longitude}&z=15&output=embed`}
             />
+
+          </div>
+
+        )}
+
+        {/* RATING */}
+        {order.status ===
+          "delivered" && (
+
+          <div className="bg-slate-900 p-6 rounded-2xl">
+
+            <h2 className="text-2xl font-bold mb-5">
+
+              Rate Your Order
+
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={foodRating}
+                onChange={(e) =>
+                  setFoodRating(
+                    e.target.value
+                  )
+                }
+                className="bg-slate-800 p-4 rounded-xl"
+                placeholder="Food Rating"
+              />
+
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={driverRating}
+                onChange={(e) =>
+                  setDriverRating(
+                    e.target.value
+                  )
+                }
+                className="bg-slate-800 p-4 rounded-xl"
+                placeholder="Driver Rating"
+              />
+
+            </div>
+
+            <button
+              onClick={submitRating}
+              className="bg-yellow-500 hover:bg-yellow-600 px-6 py-3 rounded-xl font-bold text-black"
+            >
+              Submit Rating
+            </button>
 
           </div>
 

@@ -29,10 +29,9 @@ export default function Dashboard() {
   const [menuPrice, setMenuPrice] =
     useState("");
 
-  const user =
-    JSON.parse(
-      localStorage.getItem("user")
-    );
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
   // FETCH DATA
   const fetchData =
@@ -45,7 +44,7 @@ export default function Dashboard() {
             "token"
           );
 
-        // RESTAURANTS
+        // GET RESTAURANTS
         const restaurantResponse =
           await fetch(
             "http://localhost:5000/api/restaurants"
@@ -55,16 +54,17 @@ export default function Dashboard() {
           await restaurantResponse.json();
 
         const foundRestaurant =
-        restaurants.find(
-        (r) =>
-        r.owner?._id === user._id
-        );
+          restaurants.find(
+            (r) =>
+              r.owner?._id ===
+              user._id
+          );
 
         setRestaurant(
           foundRestaurant
         );
 
-        // ORDERS
+        // GET ORDERS
         const orderResponse =
           await fetch(
             "http://localhost:5000/api/orders",
@@ -99,6 +99,13 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
+
+  // INITIAL FETCH
+  useEffect(() => {
+
+    fetchData();
+
+  }, []);
 
   // ADD MENU ITEM
   const addMenuItem =
@@ -271,13 +278,7 @@ export default function Dashboard() {
       }
     };
 
-  // INITIAL FETCH
-  useEffect(() => {
-
-    fetchData();
-
-  }, []);
-
+  // LOADING
   if (loading) {
 
     return (
@@ -299,27 +300,23 @@ export default function Dashboard() {
       <div className="p-8 max-w-7xl mx-auto">
 
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-10">
+        <div className="mb-10">
 
-          <div>
+          <h1 className="text-4xl font-bold mb-2">
 
-            <h1 className="text-4xl font-bold mb-2">
+            Restaurant Dashboard
 
-              Restaurant Dashboard
+          </h1>
 
-            </h1>
+          <p className="text-gray-400">
 
-            <p className="text-gray-400">
+            Manage menu and orders
 
-              Manage menu and orders
-
-            </p>
-
-          </div>
+          </p>
 
         </div>
 
-        {/* MENU */}
+        {/* MENU MANAGEMENT */}
         {restaurant && (
 
           <div className="bg-slate-900 p-6 rounded-2xl mb-10">
@@ -330,7 +327,7 @@ export default function Dashboard() {
 
             </h2>
 
-            {/* ADD */}
+            {/* ADD MENU */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
               <input
@@ -433,6 +430,193 @@ export default function Dashboard() {
           </div>
 
         )}
+
+        {/* ORDERS */}
+        <div>
+
+          <h2 className="text-3xl font-bold mb-6">
+
+            Orders
+
+          </h2>
+
+          {orders.length === 0 ? (
+
+            <div className="bg-slate-900 p-6 rounded-2xl text-gray-400">
+
+              No Orders Yet
+
+            </div>
+
+          ) : (
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              {orders.map((order) => (
+
+                <div
+                  key={order._id}
+                  className="bg-slate-900 p-6 rounded-2xl"
+                >
+
+                  {/* TOP */}
+                  <div className="flex justify-between items-start mb-5">
+
+                    <div>
+
+                      <h2 className="text-2xl font-bold mb-2">
+
+                        {order.user?.name}
+
+                      </h2>
+
+                      <p className="text-gray-400 text-sm">
+
+                        {order.user?.email}
+
+                      </p>
+
+                    </div>
+
+                    <div className="bg-orange-500 px-4 py-2 rounded-xl text-sm font-bold capitalize">
+
+                      {order.status.replaceAll(
+                        "_",
+                        " "
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  {/* ITEMS */}
+                  <div className="space-y-3 mb-5">
+
+                    {order.items.map(
+                      (
+                        item,
+                        index
+                      ) => (
+
+                        <div
+                          key={index}
+                          className="bg-slate-800 px-4 py-3 rounded-xl flex justify-between"
+                        >
+
+                          <span>
+
+                            {item.name}
+
+                          </span>
+
+                          <span className="text-gray-400">
+
+                            × {item.quantity}
+
+                          </span>
+
+                        </div>
+                      )
+                    )}
+
+                  </div>
+
+                  {/* DRIVER */}
+                  {order.driver && (
+
+                    <div className="bg-slate-800 p-4 rounded-xl mb-5">
+
+                      <p className="text-sm text-gray-400 mb-1">
+
+                        Driver
+
+                      </p>
+
+                      <h3 className="text-lg font-bold">
+
+                        {order.driver.name}
+
+                      </h3>
+
+                    </div>
+
+                  )}
+
+                  {/* TOTAL */}
+                  <div className="text-orange-400 text-xl font-bold mb-5">
+
+                    ₹ {order.totalPrice}
+
+                  </div>
+
+                  {/* BUTTONS */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+                    <button
+                      onClick={() =>
+                        updateStatus(
+                          order._id,
+                          "accepted"
+                        )
+                      }
+                      className="bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold"
+                    >
+
+                      Accept
+
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        updateStatus(
+                          order._id,
+                          "preparing"
+                        )
+                      }
+                      className="bg-orange-500 hover:bg-orange-600 py-3 rounded-xl font-bold"
+                    >
+
+                      Preparing
+
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        updateStatus(
+                          order._id,
+                          "rejected"
+                        )
+                      }
+                      className="bg-red-500 hover:bg-red-600 py-3 rounded-xl font-bold"
+                    >
+
+                      Reject
+
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/tracking/${order._id}`
+                        )
+                      }
+                      className="bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold"
+                    >
+
+                      Track
+
+                    </button>
+
+                  </div>
+
+                </div>
+              ))}
+
+            </div>
+
+          )}
+
+        </div>
 
       </div>
 
