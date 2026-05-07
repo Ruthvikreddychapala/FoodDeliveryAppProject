@@ -1,17 +1,79 @@
-const express = require("express");
-const router = express.Router();
+const express =
+  require("express");
 
-const restaurantController = require("../controllers/restaurantController");
-const authMiddleware = require("../middleware/authMiddleware");
-const approvalMiddleware = require("../middleware/approvalMiddleware");
+const router =
+  express.Router();
 
-// Create restaurant
-router.post("/", authMiddleware, approvalMiddleware, restaurantController.createRestaurant);
+const restaurantController =
+  require("../controllers/restaurantController");
 
-// Get all restaurants
-router.get("/", restaurantController.getRestaurants);
+const authMiddleware =
+  require("../middleware/authMiddleware");
 
-// Add menu item
-router.post("/:id/menu", authMiddleware, approvalMiddleware, restaurantController.addMenuItem);
+const approvalMiddleware =
+  require("../middleware/approvalMiddleware");
+
+
+// ======================================
+// PUBLIC ROUTES
+// ======================================
+
+router.get(
+  "/",
+  restaurantController.getRestaurants
+);
+
+router.get(
+  "/:id",
+  restaurantController.getRestaurantById
+);
+
+
+// ======================================
+// CREATE RESTAURANT
+// ======================================
+
+router.post(
+  "/",
+  authMiddleware,
+  approvalMiddleware,
+  restaurantController.createRestaurant
+);
+
+
+// ======================================
+// ADD MENU ITEM
+// ======================================
+
+router.post(
+  "/:id/menu",
+  authMiddleware,
+  approvalMiddleware,
+  restaurantController.addMenuItem
+);
+
+
+// ======================================
+// EDIT MENU ITEM
+// ======================================
+
+router.put(
+  "/:id/menu/:menuId",
+  authMiddleware,
+  approvalMiddleware,
+  restaurantController.editMenuItem
+);
+
+
+// ======================================
+// DELETE MENU ITEM
+// ======================================
+
+router.delete(
+  "/:id/menu/:menuId",
+  authMiddleware,
+  approvalMiddleware,
+  restaurantController.deleteMenuItem
+);
 
 module.exports = router;

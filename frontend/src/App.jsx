@@ -1,36 +1,50 @@
-import { Routes, Route } from "react-router-dom";
+// frontend/src/App.jsx
 
-import Home from "./pages/customer/Home";
-import MenuPage from "./pages/customer/MenuPage";
-import CartPage from "./pages/customer/CartPage";
-import TrackingPage from "./pages/customer/TrackingPage";
-import PaymentSuccess from "./pages/customer/PaymentSuccess";
+import { Routes, Route, Navigate } from "react-router-dom";
 
+// AUTH PAGES
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
+// CUSTOMER PAGES
+import Home from "./pages/Home";
+import Menu from "./pages/Menu";
+import Cart from "./pages/Cart";
+import Tracking from "./pages/Tracking";
+import MyOrders from "./pages/MyOrders";
+
+// RESTAURANT PAGES
 import RestaurantDashboard from "./pages/restaurant/Dashboard";
-import MenuManager from "./pages/restaurant/MenuManager";
 import OrderQueue from "./pages/restaurant/OrderQueue";
 
+// DRIVER PAGES
 import DriverDashboard from "./pages/driver/Dashboard";
+
+
+
 
 function App() {
   return (
     <Routes>
-      {/* CUSTOMER */}
-      <Route path="/" element={<Home />} />
-      <Route path="/menu" element={<MenuPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/tracking" element={<TrackingPage />} />
-      <Route path="/success" element={<PaymentSuccess />} />
 
-      {/* RESTAURANT */}
+      {/* DEFAULT ROUTE */}
+      <Route path="/" element={<Navigate to="/login" />} />
+
+      {/* AUTH ROUTES */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* CUSTOMER ROUTES */}
+      <Route path="/home" element={<Home />} />
+      <Route path="/menu/:id" element={<Menu />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/tracking/:id" element={<Tracking />} />
+      
+
+      {/* RESTAURANT ROUTES */}
       <Route
         path="/restaurant/dashboard"
         element={<RestaurantDashboard />}
-      />
-
-      <Route
-        path="/restaurant/menu"
-        element={<MenuManager />}
       />
 
       <Route
@@ -38,12 +52,20 @@ function App() {
         element={<OrderQueue />}
       />
 
-      {/* DRIVER */}
+      {/* DRIVER ROUTES */}
       <Route
         path="/driver/dashboard"
         element={<DriverDashboard />}
       />
+
+      <Route
+  path="/my-orders"
+  element={<MyOrders />}
+/>
+
     </Routes>
+
+    
   );
 }
 

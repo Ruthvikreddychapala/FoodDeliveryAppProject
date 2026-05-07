@@ -1,21 +1,36 @@
 module.exports = (req, res, next) => {
+
   try {
-    // 1. Check if user exists (comes from authMiddleware)
+
+    // CHECK USER
     if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
+
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
     }
 
-    // 2. Check approval status
+    // CUSTOMERS DON'T NEED APPROVAL
+    if (req.user.role === "customer") {
+
+      return next();
+    }
+
+    // RESTAURANT + DRIVER NEED APPROVAL
     if (!req.user.isApproved) {
+
       return res.status(403).json({
         message: "Account not approved yet"
       });
     }
 
-    // 3. Allow request
+    // ALLOW
     next();
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    res.status(500).json({
+      error: error.message
+    });
   }
 };
