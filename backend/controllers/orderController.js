@@ -22,6 +22,12 @@ exports.createOrder = async (req, res) => {
       totalPrice
     });
 
+    const User = require("../models/User"); 
+
+    await User.findByIdAndUpdate(req.user._id, {
+    $inc: { loyaltyPoints: Math.floor(totalPrice / 10) }
+});
+
     res.status(201).json(order);
 
   } catch (error) {

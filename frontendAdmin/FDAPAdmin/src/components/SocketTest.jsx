@@ -1,3 +1,5 @@
+// frontend/src/components/SocketTest.jsx
+
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
@@ -22,8 +24,15 @@ function SocketTest() {
   }, []);
 
   return (
-    <div style={{ color: "white", padding: "40px" }}>
-      <h1>Sending Driver Location...</h1>
+    <div
+      style={{
+        background: "#0f172a",
+        color: "white",
+        minHeight: "100vh",
+        padding: "40px"
+      }}
+    >
+      <h1>Socket.io Testing Running</h1>
     </div>
   );
 }
