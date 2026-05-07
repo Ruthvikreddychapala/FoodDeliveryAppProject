@@ -1,11 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const cors = require("cors");
+const dotenv = require("dotenv");
 const http = require("http");
 const { Server } = require("socket.io");
-delete mongoose.connection.models['User'];
-const User = require("./models/User");
 
 dotenv.config();
 
@@ -14,32 +12,45 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ROUTES */
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/orders", require("./routes/orderRoutes"));
-app.use("/api/restaurants", require("./routes/restaurantRoutes"));
-app.use("/api/admin", require("./routes/adminRoutes"));
+// ROUTES
+const authRoutes = require("./routes/authRoutes");
+const restaurantRoutes = require("./routes/restaurantRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
-/* TEST ROUTE */
-app.get("/", (req, res) => {
-  res.send("API running...");
+// MODELS
+const User = require("./models/User");
+
+// ROUTE MIDDLEWARE
+app.use("/api/auth", authRoutes);
+app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
+
+// MONGODB CONNECTION
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+  console.log("✅ MongoDB Connected");
+})
+.catch((error) => {
+  console.log(error);
 });
 
-/* CREATE HTTP SERVER */
+// SOCKET.IO SETUP
 const server = http.createServer(app);
 
-/* SOCKET.IO */
 const io = new Server(server, {
   cors: {
     origin: "*"
   }
 });
 
-/* SOCKET CONNECTION */
+// SOCKET CONNECTION
 io.on("connection", (socket) => {
 
   console.log("✅ User Connected:", socket.id);
 
+  // DRIVER LOCATION UPDATE
   socket.on("driverLocationUpdate", async (data) => {
 
     console.log("📍 Driver Location:", data);
@@ -47,17 +58,19 @@ io.on("connection", (socket) => {
     try {
 
       const updatedUser = await User.findByIdAndUpdate(
-  data.driverId,
-  {
-    location: {
-      latitude: data.latitude,
-      longitude: data.longitude
-    }
-  },
-  { new: true }
-);
+        data.driverId,
+        {
+          $set: {
+            "location.latitude": data.latitude,
+            "location.longitude": data.longitude
+          }
+        },
+        {
+          returnDocument: "after"
+        }
+      );
 
-console.log(updatedUser);
+      console.log(updatedUser);
 
       io.emit("driverLocationChanged", data);
 
@@ -67,22 +80,16 @@ console.log(updatedUser);
 
   });
 
+  // DISCONNECT
   socket.on("disconnect", () => {
     console.log("❌ User Disconnected");
   });
 
 });
 
-/* DATABASE */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected");
+// SERVER
+const PORT = process.env.PORT || 5000;
 
-    server.listen(5000, () => {
-      console.log("🚀 Server running on port 5000");
-    });
-  })
-  .catch((err) => {
-    console.log("❌ DB Error:", err);
-  });
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
